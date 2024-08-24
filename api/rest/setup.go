@@ -15,9 +15,16 @@ func Run(cfg config.Config, appContainer *app.Container) {
 	fiberApp.Use(middlewares.LimiterMiddleware(1, 100, cfg.Redis))
 	apiV1 := fiberApp.Group("/api/v1")
 
+	registerGlobalRoutes(apiV1, appContainer)
 	registerProviderRoutes(apiV1, appContainer)
 
 	log.Fatal(fiberApp.Listen(fmt.Sprintf("%s:%d", cfg.Server.Host, cfg.Server.HTTPPort)))
+}
+
+func registerGlobalRoutes(router fiber.Router, app *app.Container) {
+	router.Post("/register", handlers.RegisterUser(app.AuthService()))
+	router.Post("/login", handlers.LoginUser(app.AuthService()))
+	router.Get("/refresh", handlers.RefreshToken(app.AuthService()))
 }
 
 func registerProviderRoutes(router fiber.Router, app *app.Container) {

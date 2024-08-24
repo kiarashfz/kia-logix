@@ -4,6 +4,7 @@ import (
 	"gorm.io/gorm"
 	"kia-logix/config"
 	"kia-logix/internal/providers"
+	"kia-logix/internal/user"
 	"kia-logix/pkg/adapters/storage"
 	"kia-logix/service"
 	"log"
@@ -12,6 +13,7 @@ import (
 type Container struct {
 	cfg             config.Config
 	dbConn          *gorm.DB
+	authService     service.IAuthService
 	providerService service.IProviderService
 }
 
@@ -22,6 +24,7 @@ func NewAppContainer(cfg config.Config) (*Container, error) {
 
 	app.mustInitDB()
 
+	app.setAuthService()
 	app.setProviderService()
 
 	return app, nil
@@ -60,4 +63,16 @@ func (a *Container) setProviderService() {
 
 func (a *Container) ProviderService() service.IProviderService {
 	return a.providerService
+}
+
+func (a *Container) setAuthService() {
+	// singleton
+	if a.authService != nil { // Fixed condition
+		return
+	}
+	a.authService = service.NewAuthService(user.NewOps(storage.NewUserRepo(a.RawDBConnection())), a.cfg.Auth)
+}
+
+func (a *Container) AuthService() service.IAuthService {
+	return a.authService
 }

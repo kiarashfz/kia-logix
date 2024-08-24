@@ -5,6 +5,7 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"kia-logix/config"
+	"kia-logix/pkg/adapters/storage/entities"
 )
 
 func NewPostgresGormConnection(dbConfig config.DB) (*gorm.DB, error) {
@@ -16,7 +17,7 @@ func NewPostgresGormConnection(dbConfig config.DB) (*gorm.DB, error) {
 func Migrate(db *gorm.DB) error {
 	migrator := db.Migrator()
 
-	err := migrator.AutoMigrate()
+	err := migrator.AutoMigrate(&entities.Provider{})
 	if err != nil {
 		return err
 	}

@@ -55,7 +55,7 @@ func (a *Container) mustInitDB() {
 
 func (a *Container) setProviderService() {
 	// singleton
-	if a.providerService != nil { // Fixed condition
+	if a.providerService != nil {
 		return
 	}
 	a.providerService = service.NewProviderService(providers.NewOps(storage.NewProviderRepo(a.RawDBConnection())))
@@ -67,7 +67,7 @@ func (a *Container) ProviderService() service.IProviderService {
 
 func (a *Container) setAuthService() {
 	// singleton
-	if a.authService != nil { // Fixed condition
+	if a.authService != nil {
 		return
 	}
 	a.authService = service.NewAuthService(user.NewOps(storage.NewUserRepo(a.RawDBConnection())), a.cfg.Auth)

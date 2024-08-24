@@ -2,6 +2,7 @@ package config
 
 type Config struct {
 	Server Server `mapstructure:"server"`
+	Auth   Auth   `mapstructure:"auth"`
 	DB     DB     `mapstructure:"db"`
 	Redis  Redis  `mapstructure:"redis"`
 }
@@ -9,6 +10,11 @@ type Config struct {
 type Server struct {
 	HTTPPort int    `mapstructure:"http_port"`
 	Host     string `mapstructure:"host"`
+}
+type Auth struct {
+	SecretToken            string `mapstructure:"token_secret"`
+	TokenExpMinutes        uint   `mapstructure:"token_exp_minutes"`
+	RefreshTokenExpMinutes uint   `mapstructure:"refresh_token_exp_minutes"`
 }
 
 type DB struct {

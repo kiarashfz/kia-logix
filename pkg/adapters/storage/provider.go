@@ -6,6 +6,8 @@ import (
 	"kia-logix/internal/providers"
 	"kia-logix/pkg/adapters/storage/entities"
 	"kia-logix/pkg/adapters/storage/mappers"
+	internalErrors "kia-logix/pkg/errors"
+	"strings"
 )
 
 type providerRepo struct {
@@ -16,6 +18,19 @@ func NewProviderRepo(db *gorm.DB) providers.Repo {
 	return &providerRepo{
 		db: db,
 	}
+}
+
+func (p *providerRepo) Create(ctx context.Context, provider *providers.Provider) (*providers.Provider, error) {
+	newProvider := mappers.ProviderDomainToEntity(provider)
+	err := p.db.WithContext(ctx).Create(&newProvider).Error
+	if err != nil {
+		if strings.Contains(err.Error(), "duplicate key value violates unique constraint") {
+			return nil, internalErrors.DBErrDuplicateKey
+		}
+		return nil, err
+	}
+	createdProvider := mappers.ProviderEntityToDomain(*newProvider)
+	return &createdProvider, nil
 }
 
 func (p *providerRepo) GetAll(ctx context.Context, limit, offset uint) ([]providers.Provider, uint, error) {

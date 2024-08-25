@@ -3,6 +3,8 @@ package app
 import (
 	"gorm.io/gorm"
 	"kia-logix/config"
+	"kia-logix/internal/addresses"
+	"kia-logix/internal/orders"
 	"kia-logix/internal/providers"
 	"kia-logix/internal/user"
 	"kia-logix/pkg/adapters/storage"
@@ -15,6 +17,8 @@ type Container struct {
 	dbConn          *gorm.DB
 	authService     service.IAuthService
 	providerService service.IProviderService
+	addressService  service.IAddressService
+	orderService    service.IOrderService
 }
 
 func NewAppContainer(cfg config.Config) (*Container, error) {
@@ -26,6 +30,8 @@ func NewAppContainer(cfg config.Config) (*Container, error) {
 
 	app.setAuthService()
 	app.setProviderService()
+	app.setAddressService()
+	app.setOrderService()
 
 	return app, nil
 }
@@ -53,18 +59,6 @@ func (a *Container) mustInitDB() {
 	}
 }
 
-func (a *Container) setProviderService() {
-	// singleton
-	if a.providerService != nil {
-		return
-	}
-	a.providerService = service.NewProviderService(providers.NewOps(storage.NewProviderRepo(a.RawDBConnection())))
-}
-
-func (a *Container) ProviderService() service.IProviderService {
-	return a.providerService
-}
-
 func (a *Container) setAuthService() {
 	// singleton
 	if a.authService != nil {
@@ -73,6 +67,42 @@ func (a *Container) setAuthService() {
 	a.authService = service.NewAuthService(user.NewOps(storage.NewUserRepo(a.RawDBConnection())), a.cfg.Auth)
 }
 
-func (a *Container) AuthService() service.IAuthService {
+func (a *Container) GetAuthService() service.IAuthService {
 	return a.authService
+}
+
+func (a *Container) setProviderService() {
+	// singleton
+	if a.providerService != nil {
+		return
+	}
+	a.providerService = service.NewProviderService(providers.NewOps(storage.NewProviderRepo(a.RawDBConnection())))
+}
+
+func (a *Container) GetProviderService() service.IProviderService {
+	return a.providerService
+}
+
+func (a *Container) setOrderService() {
+	// singleton
+	if a.orderService != nil {
+		return
+	}
+	a.orderService = service.NewOrderService(orders.NewOps(storage.NewOrderRepo(a.RawDBConnection())))
+}
+
+func (a *Container) GetOrderService() service.IOrderService {
+	return a.orderService
+}
+
+func (a *Container) setAddressService() {
+	// singleton
+	if a.addressService != nil {
+		return
+	}
+	a.addressService = service.NewAddressService(addresses.NewOps(storage.NewAddressRepo(a.RawDBConnection())))
+}
+
+func (a *Container) GetAddressService() service.IAddressService {
+	return a.addressService
 }

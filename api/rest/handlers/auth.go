@@ -31,7 +31,6 @@ func RegisterUser(authService service.IAuthService) fiber.Handler {
 			if errors.Is(err, user.ErrPhoneAlreadyExists) {
 				return helpers.SendError(c, err, fiber.StatusConflict)
 			}
-
 			return helpers.SendError(c, err, fiber.StatusInternalServerError)
 		}
 
@@ -53,8 +52,10 @@ func LoginUser(authService service.IAuthService) fiber.Handler {
 
 		authToken, err := authService.Login(c.Context(), req.Phone, req.Password)
 		if err != nil {
-
-			return helpers.SendError(c, err, fiber.StatusBadRequest)
+			if errors.Is(err, user.ErrInvalidAuthentication) {
+				return helpers.SendError(c, err, fiber.StatusUnauthorized)
+			}
+			return helpers.SendError(c, err, fiber.StatusInternalServerError)
 		}
 		return helpers.SendResponse(c, fiber.StatusOK, "you logged in successfully.", authToken)
 	}

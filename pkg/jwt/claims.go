@@ -6,5 +6,6 @@ import (
 
 type UserClaims struct {
 	jwtLib.RegisteredClaims
-	UserID uint
+	UserID  uint
+	IsAdmin bool
 }

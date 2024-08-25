@@ -6,6 +6,13 @@ import (
 	"kia-logix/pkg/fp"
 )
 
+func ProviderDomainToEntity(domainProvider *providers.Provider) *entities.Provider {
+	return &entities.Provider{
+		Name: domainProvider.Name,
+		URL:  domainProvider.URL,
+	}
+}
+
 func ProviderEntityToDomain(providerEntity entities.Provider) providers.Provider {
 	return providers.Provider{
 		ID:   providerEntity.ID,

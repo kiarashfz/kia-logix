@@ -21,7 +21,7 @@ func OrderToCreateOrderResp(domainOrder *orders.Order) *OrderResp {
 		Receiver:   helpers.ReceiverToReceiverResp(domainOrder.Receiver),
 		ProviderID: domainOrder.ProviderID,
 		PickupDate: helpers.Date{
-			Time: domainOrder.PickupDate,
+			Time: *domainOrder.PickupDate,
 		},
 		Status: string(domainOrder.Status),
 	}

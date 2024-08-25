@@ -9,6 +9,7 @@ import (
 type IProviderOps interface {
 	Create(ctx context.Context, provider *Provider) (*Provider, error)
 	GetAll(ctx context.Context, page, pageSize uint) ([]Provider, uint, error)
+	GetReports(ctx context.Context, page, pageSize uint) ([]Provider, uint, error)
 }
 
 type Ops struct {
@@ -38,4 +39,10 @@ func (o *Ops) GetAll(ctx context.Context, page, pageSize uint) ([]Provider, uint
 	limit := pageSize
 	offset := (page - 1) * pageSize
 	return o.repo.GetAll(ctx, limit, offset)
+}
+
+func (o *Ops) GetReports(ctx context.Context, page, pageSize uint) ([]Provider, uint, error) {
+	limit := pageSize
+	offset := (page - 1) * pageSize
+	return o.repo.GetReports(ctx, limit, offset)
 }

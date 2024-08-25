@@ -57,3 +57,46 @@ func (p *providerRepo) GetAll(ctx context.Context, limit, offset uint) ([]provid
 
 	return mappers.BatchProviderEntitiesToDomain(providersEntities), uint(totalCount), nil
 }
+
+func (p *providerRepo) GetReports(ctx context.Context, limit, offset uint) (providers []providers.Provider, total uint, err error) {
+	query := p.db.WithContext(ctx).Raw(`SELECT
+  provider_id AS id,
+  providers.name,
+  AVG(COALESCE(DATE_PART('day', delivered_date - pickup_date), 0)) AS avg_delivery_days
+FROM
+  orders
+JOIN
+  providers ON orders.provider_id = providers.id
+WHERE
+  pickup_date IS NOT NULL
+  AND delivered_date IS NOT NULL
+GROUP BY
+  provider_id,
+  providers.name
+ORDER BY
+  avg_delivery_days DESC;`)
+	err = query.Scan(&providers).Error
+
+	if err != nil {
+		return nil, 0, err
+	}
+	if providers == nil {
+		return nil, 0, nil
+	}
+
+	var totalCount int64
+
+	if err := query.Count(&totalCount).Error; err != nil {
+		return nil, 0, err
+	}
+
+	if offset > 0 {
+		query = query.Offset(int(offset))
+	}
+
+	if limit > 0 {
+		query = query.Limit(int(limit))
+	}
+
+	return providers, uint(totalCount), nil
+}

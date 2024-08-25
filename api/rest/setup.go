@@ -20,6 +20,7 @@ func Run(cfg config.Config, appContainer *app.Container) {
 	registerProviderRoutes(apiV1, appContainer, []byte(cfg.Auth.SecretToken))
 	registerAddressRoutes(apiV1, appContainer, []byte(cfg.Auth.SecretToken))
 	registerOrderRoutes(apiV1, appContainer, []byte(cfg.Auth.SecretToken))
+	registerReportRoutes(apiV1, appContainer, []byte(cfg.Auth.SecretToken), cfg.Redis)
 
 	log.Fatal(fiberApp.Listen(fmt.Sprintf("%s:%d", cfg.Server.Host, cfg.Server.HTTPPort)))
 }
@@ -34,7 +35,7 @@ func registerProviderRoutes(router fiber.Router, app *app.Container, secret []by
 	router = router.Group("/providers")
 	router.Use(middlewares.Auth(secret))
 	router.Use(permissions.AuthenticatedPermission())
-	router.Use(permissions.AdminPermission())
+	//router.Use(permissions.AdminPermission())
 
 	router.Post("",
 		handlers.CreateProvider(app.GetProviderService()),
@@ -61,5 +62,17 @@ func registerOrderRoutes(router fiber.Router, app *app.Container, secret []byte)
 
 	router.Post("",
 		handlers.CreateOrder(app.GetOrderService()),
+	)
+}
+
+func registerReportRoutes(router fiber.Router, app *app.Container, secret []byte, redisCfg config.Redis) {
+	router = router.Group("/reports")
+	router.Use(middlewares.Auth(secret))
+	router.Use(permissions.AuthenticatedPermission())
+
+	providersReportsRouter := router.Group("/providers")
+	providersReportsRouter.Get("",
+		middlewares.CacheMiddleware(60*24, redisCfg), // 24 hours cache
+		handlers.GetProvidersReports(app.GetProviderService()),
 	)
 }

@@ -37,5 +37,6 @@ type CronJobs struct {
 }
 
 type UpdateOrdersStatusJob struct {
-	Hour int `mapstructure:"hour"`
+	Hour   int `mapstructure:"hour"`
+	Minute int `mapstructure:"minute"`
 }

@@ -1,9 +1,10 @@
 package config
 
 import (
-	"path/filepath"
-
+	"github.com/joho/godotenv"
 	"github.com/spf13/viper"
+	"log"
+	"path/filepath"
 )
 
 func ReadGeneric[T any](cfgPath string) (T, error) {
@@ -39,7 +40,15 @@ func absPath(cfgPath string) (string, error) {
 	return cfgPath, nil
 }
 
+func loadEnvVars(filePath string) {
+	err := godotenv.Load(filePath)
+	if err != nil {
+		log.Fatalf("Error loading .env file: %v", err)
+	}
+}
+
 func MustReadStandard(configPath string) Config {
+	loadEnvVars(".env")
 	cfg, err := readStandard(configPath)
 	if err != nil {
 		panic(err)

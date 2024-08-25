@@ -10,6 +10,7 @@ require (
 	github.com/gofiber/fiber/v2 v2.52.5
 	github.com/gofiber/storage/redis/v3 v3.1.2
 	github.com/golang-jwt/jwt/v5 v5.2.1
+	github.com/joho/godotenv v1.5.1
 	github.com/spf13/viper v1.19.0
 	golang.org/x/crypto v0.21.0
 	golang.org/x/net v0.23.0

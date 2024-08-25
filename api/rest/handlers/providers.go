@@ -50,3 +50,16 @@ func GetProviders(providerService service.IProviderService) fiber.Handler {
 		return helpers.SendPaginatedResponse(c, fiber.StatusOK, "providers successfully fetched.", page, pageSize, total, data)
 	}
 }
+
+func GetProvidersReports(providerService service.IProviderService) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		page, pageSize := helpers.GetPageAndPageSizeFromQParams(c)
+		fetchedProviders, total, err := providerService.GetProvidersReports(c.Context(), page, pageSize)
+		if err != nil {
+			status := fiber.StatusInternalServerError
+			return helpers.SendError(c, err, status)
+		}
+		data := presenter.BatchProviderToGetProvidersReportsResp(fetchedProviders)
+		return helpers.SendPaginatedResponse(c, fiber.StatusOK, "providers reports successfully fetched.", page, pageSize, total, data)
+	}
+}

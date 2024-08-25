@@ -10,6 +10,8 @@ import (
 
 type Repo interface {
 	Create(ctx context.Context, order *Order) (*Order, error)
+	Update(ctx context.Context, order *Order) error
+	GetUpdateNeedOrders(ctx context.Context) ([]Order, error)
 }
 
 type Sender struct {
@@ -27,15 +29,17 @@ type Receiver struct {
 }
 
 type Order struct {
-	ID         uint
-	OwnerID    uint
-	Owner      *user.User
-	Sender     *Sender
-	Receiver   *Receiver
-	ProviderID uint
-	Provider   *providers.Provider
-	PickupDate time.Time
-	Status     OrderStatus
+	ID                uint
+	OwnerID           uint
+	Owner             *user.User
+	Sender            *Sender
+	Receiver          *Receiver
+	ProviderID        uint
+	Provider          *providers.Provider
+	PickupDate        *time.Time
+	DeliveredDate     *time.Time
+	Status            OrderStatus
+	IsPickedUpSMSSent bool
 }
 
 type OrderStatus string

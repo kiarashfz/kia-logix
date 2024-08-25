@@ -1,10 +1,11 @@
 package config
 
 type Config struct {
-	Server Server `mapstructure:"server"`
-	Auth   Auth   `mapstructure:"auth"`
-	DB     DB     `mapstructure:"db"`
-	Redis  Redis  `mapstructure:"redis"`
+	Server   Server   `mapstructure:"server"`
+	Auth     Auth     `mapstructure:"auth"`
+	DB       DB       `mapstructure:"db"`
+	Redis    Redis    `mapstructure:"redis"`
+	CronJobs CronJobs `mapstructure:"cronjobs"`
 }
 
 type Server struct {
@@ -29,4 +30,12 @@ type Redis struct {
 	Host string `mapstructure:"host"`
 	Port int    `mapstructure:"port"`
 	Pass string `mapstructure:"pass"`
+}
+
+type CronJobs struct {
+	UpdateOrdersStatusJob UpdateOrdersStatusJob `mapstructure:"update_orders_status"`
+}
+
+type UpdateOrdersStatusJob struct {
+	Hour int `mapstructure:"hour"`
 }

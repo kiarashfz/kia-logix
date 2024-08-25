@@ -19,6 +19,8 @@ type Order struct {
 	ReceiverAddress   *Address `gorm:"foreignKey:ReceiverAddressID"`
 	ProviderID        uint
 	Provider          *Provider `gorm:"foreignKey:ProviderID"`
-	PickupDate        time.Time
+	PickupDate        *time.Time
+	DeliveredDate     *time.Time
 	Status            string `gorm:"not null; type:varchar(63)"`
+	IsPickedUpSMSSent bool   `gorm:"default:false"`
 }

@@ -11,7 +11,7 @@ type ProviderResp struct {
 	URL  string `json:"url"`
 }
 
-func providerToProviderResp(domainProvider providers.Provider) ProviderResp {
+func ProviderToProviderResp(domainProvider providers.Provider) ProviderResp {
 	return ProviderResp{
 		ID:   domainProvider.ID,
 		Name: domainProvider.Name,
@@ -20,5 +20,5 @@ func providerToProviderResp(domainProvider providers.Provider) ProviderResp {
 }
 
 func BatchProviderToGetProvidersResp(domainProviders []providers.Provider) []ProviderResp {
-	return fp.Map(domainProviders, providerToProviderResp)
+	return fp.Map(domainProviders, ProviderToProviderResp)
 }

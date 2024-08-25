@@ -29,7 +29,7 @@ func NewAuthService(userOps *user.Ops, authConfig config.Auth) *AuthService {
 }
 
 type UserToken struct {
-	AuthorizationToken string `json:"auth_token"`
+	AuthorizationToken string `json:"access_token"`
 	RefreshToken       string `json:"refresh_token"`
 }
 
@@ -103,6 +103,7 @@ func (s *AuthService) userClaims(user *user.User, exp time.Time) *jwt.UserClaims
 				Time: exp,
 			},
 		},
-		UserID: user.ID,
+		UserID:  user.ID,
+		IsAdmin: user.IsAdmin,
 	}
 }

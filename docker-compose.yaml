@@ -1,4 +1,18 @@
 services:
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgis
+      - redis
+      - faktory
+    networks:
+      - backend-network
+
   postgis:
     image: postgis/postgis
     restart: always
@@ -24,12 +38,28 @@ services:
     networks:
       - backend-network
 
+  faktory:
+    image: contribsys/faktory:1.5.1
+    container_name: faktory
+    ports:
+      - "7419:7419"  # default port
+      - "7420:7420"  # web UI port
+    environment:
+      FAKTORY_CONCURRENCY: 10
+    volumes:
+      - faktory_data:/var/lib/faktory
+    networks:
+      - backend-network
+
+
 
 networks:
   backend-network:
     driver: bridge
 
 volumes:
+  faktory_data:
+    driver: local
   pg-data:
   redis-data:
     driver: local

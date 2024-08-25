@@ -8,10 +8,14 @@ auth:
 db:
   user: "postgres"
   pass: "postgres"
-  host: "0.0.0.0"
+  host: "postgis"
   port: 5432
   db_name: "kia_logix"
 redis:
-  host: "0.0.0.0"
+  host: "redis"
   port: "6379"
   pass: "redis"
+cronjobs:
+  update_orders_status:
+    hour: 12
+    minute: 10

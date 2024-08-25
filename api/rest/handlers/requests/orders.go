@@ -25,6 +25,6 @@ func CreateOrderToDomainOrder(o *CreateOrder) *orders.Order {
 			AddressID: o.Receiver.AddressID,
 		},
 		ProviderID: o.ProviderID,
-		PickupDate: o.PickupDate.Time,
+		PickupDate: &o.PickupDate.Time,
 	}
 }

@@ -7,6 +7,8 @@ import (
 
 type IOrderOps interface {
 	Create(ctx context.Context, order *Order) (*Order, error)
+	Update(ctx context.Context, order *Order) error
+	GetUpdateNeedOrders(ctx context.Context) ([]Order, error)
 }
 
 type Ops struct {
@@ -29,4 +31,12 @@ func (o *Ops) Create(ctx context.Context, order *Order) (*Order, error) {
 	order.Sender.Phone = validations.NormalizePhone(order.Sender.Phone)
 	order.Receiver.Phone = validations.NormalizePhone(order.Receiver.Phone)
 	return o.repo.Create(ctx, order)
+}
+
+func (o *Ops) Update(ctx context.Context, order *Order) error {
+	return o.repo.Update(ctx, order)
+}
+
+func (o *Ops) GetUpdateNeedOrders(ctx context.Context) ([]Order, error) {
+	return o.repo.GetUpdateNeedOrders(ctx)
 }

@@ -9,12 +9,14 @@ import (
 type Repo interface {
 	Create(ctx context.Context, provider *Provider) (*Provider, error)
 	GetAll(ctx context.Context, limit, offset uint) (providers []Provider, total uint, err error)
+	GetReports(ctx context.Context, limit, offset uint) (providers []Provider, total uint, err error)
 }
 
 type Provider struct {
-	ID   uint
-	Name string
-	URL  string
+	ID              uint
+	Name            string
+	URL             string
+	AvgDeliveryDays float64
 }
 
 func ValidateURL(input string) error {

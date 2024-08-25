@@ -7,6 +7,7 @@ import (
 	"kia-logix/internal/orders"
 	"kia-logix/internal/providers"
 	"kia-logix/internal/user"
+	"kia-logix/pkg/adapters/sms"
 	"kia-logix/pkg/adapters/storage"
 	"kia-logix/service"
 	"log"
@@ -19,6 +20,7 @@ type Container struct {
 	providerService service.IProviderService
 	addressService  service.IAddressService
 	orderService    service.IOrderService
+	smsService      sms.ISMSService
 }
 
 func NewAppContainer(cfg config.Config) (*Container, error) {
@@ -27,6 +29,8 @@ func NewAppContainer(cfg config.Config) (*Container, error) {
 	}
 
 	app.mustInitDB()
+
+	app.setSMSService()
 
 	app.setAuthService()
 	app.setProviderService()
@@ -88,7 +92,7 @@ func (a *Container) setOrderService() {
 	if a.orderService != nil {
 		return
 	}
-	a.orderService = service.NewOrderService(orders.NewOps(storage.NewOrderRepo(a.RawDBConnection())))
+	a.orderService = service.NewOrderService(orders.NewOps(storage.NewOrderRepo(a.RawDBConnection())), a.GetSMSService())
 }
 
 func (a *Container) GetOrderService() service.IOrderService {
@@ -105,4 +109,16 @@ func (a *Container) setAddressService() {
 
 func (a *Container) GetAddressService() service.IAddressService {
 	return a.addressService
+}
+
+func (a *Container) setSMSService() {
+	// singleton
+	if a.smsService != nil {
+		return
+	}
+	a.smsService = sms.NewKaveNegarService("KaveNegar API Key")
+}
+
+func (a *Container) GetSMSService() sms.ISMSService {
+	return a.smsService
 }

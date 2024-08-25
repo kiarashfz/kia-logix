@@ -6,6 +6,7 @@ import (
 )
 
 type IProviderService interface {
+	Create(ctx context.Context, provider *providers.Provider) (*providers.Provider, error)
 	GetAll(ctx context.Context, page, pageSize uint) ([]providers.Provider, uint, error)
 }
 
@@ -15,6 +16,10 @@ type ProviderService struct {
 
 func NewProviderService(providerOps providers.IProviderOps) *ProviderService {
 	return &ProviderService{providerOps: providerOps}
+}
+
+func (p *ProviderService) Create(ctx context.Context, provider *providers.Provider) (*providers.Provider, error) {
+	return p.providerOps.Create(ctx, provider)
 }
 
 func (p *ProviderService) GetAll(ctx context.Context, page, pageSize uint) ([]providers.Provider, uint, error) {

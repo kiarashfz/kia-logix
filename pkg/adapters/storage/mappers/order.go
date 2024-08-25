@@ -1,6 +1,7 @@
 package mappers
 
 import (
+	"gorm.io/gorm"
 	"kia-logix/internal/addresses"
 	"kia-logix/internal/orders"
 	"kia-logix/internal/providers"
@@ -9,17 +10,38 @@ import (
 )
 
 func OrderDomainToEntity(domainOrder *orders.Order) *entities.Order {
+	var (
+		senderName        string
+		senderPhone       string
+		senderAddressID   uint
+		receiverName      string
+		receiverPhone     string
+		receiverAddressID uint
+	)
+	if domainOrder.Sender != nil {
+		senderName = domainOrder.Sender.Name
+		senderPhone = domainOrder.Sender.Phone
+		senderAddressID = domainOrder.Sender.AddressID
+	}
+	if domainOrder.Receiver != nil {
+		receiverName = domainOrder.Receiver.Name
+		receiverPhone = domainOrder.Receiver.Phone
+		receiverAddressID = domainOrder.Receiver.AddressID
+	}
 	return &entities.Order{
+		Model:             gorm.Model{ID: domainOrder.ID},
 		OwnerID:           domainOrder.OwnerID,
-		SenderName:        domainOrder.Sender.Name,
-		SenderPhone:       domainOrder.Sender.Phone,
-		SenderAddressID:   domainOrder.Sender.AddressID,
-		ReceiverName:      domainOrder.Receiver.Name,
-		ReceiverPhone:     domainOrder.Receiver.Phone,
-		ReceiverAddressID: domainOrder.Receiver.AddressID,
+		SenderName:        senderName,
+		SenderPhone:       senderPhone,
+		SenderAddressID:   senderAddressID,
+		ReceiverName:      receiverName,
+		ReceiverPhone:     receiverPhone,
+		ReceiverAddressID: receiverAddressID,
 		ProviderID:        domainOrder.ProviderID,
 		PickupDate:        domainOrder.PickupDate,
+		DeliveredDate:     domainOrder.DeliveredDate,
 		Status:            string(domainOrder.Status),
+		IsPickedUpSMSSent: domainOrder.IsPickedUpSMSSent,
 	}
 }
 
@@ -57,9 +79,18 @@ func OrderEntityToDomain(orderEntity *entities.Order) *orders.Order {
 			AddressID: orderEntity.ReceiverAddressID,
 			Address:   domainReceiverAddress,
 		},
-		ProviderID: orderEntity.ProviderID,
-		Provider:   domainProvider,
-		PickupDate: orderEntity.PickupDate,
-		Status:     orders.OrderStatus(orderEntity.Status),
+		ProviderID:        orderEntity.ProviderID,
+		Provider:          domainProvider,
+		PickupDate:        orderEntity.PickupDate,
+		Status:            orders.OrderStatus(orderEntity.Status),
+		IsPickedUpSMSSent: orderEntity.IsPickedUpSMSSent,
 	}
+}
+
+func BatchOrderEntityToDomain(orderEntities []entities.Order) []orders.Order {
+	var domainOrders []orders.Order
+	for _, orderEntity := range orderEntities {
+		domainOrders = append(domainOrders, *OrderEntityToDomain(&orderEntity))
+	}
+	return domainOrders
 }

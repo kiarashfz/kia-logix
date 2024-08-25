@@ -6,7 +6,7 @@ import (
 	"kia-logix/api/rest/handlers"
 	"kia-logix/api/rest/middlewares"
 	"kia-logix/api/rest/permissions"
-	"kia-logix/cmd/api/app"
+	"kia-logix/cmd/app"
 	"kia-logix/config"
 	"log"
 )
